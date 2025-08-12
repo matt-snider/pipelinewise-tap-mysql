@@ -34,7 +34,9 @@ STRING_TYPES = {
     'longtext',
     'mediumtext',
     'text',
-    'varchar'
+    'varchar',
+    # Treat sets as strings and force manual conversion
+    'set'
 }
 
 BYTES_FOR_INTEGER_TYPE = {
@@ -292,7 +294,6 @@ def schema_for_column(column):  # pylint: disable=too-many-branches
     elif data_type in SPATIAL_TYPES:
         result.type = ['null', 'object', 'array']
         result.format = 'spatial'
-
     else:
         result = Schema(None,
                         inclusion='unsupported',
