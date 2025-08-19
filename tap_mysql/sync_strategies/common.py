@@ -110,6 +110,10 @@ def row_to_singer_record(catalog_entry, version, row, columns, time_extracted):
                 timedelta_from_epoch = epoch + elem
                 row_to_persist += (timedelta_from_epoch.isoformat() + '+00:00',)
 
+        # Treat sets as lists
+        elif isinstance(elem, set):
+            row_to_persist += (list(elem),)
+
         elif 'boolean' in property_type or property_type == 'boolean':
             if elem is None:
                 boolean_representation = None

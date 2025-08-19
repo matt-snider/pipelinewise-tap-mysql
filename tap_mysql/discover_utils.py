@@ -273,6 +273,10 @@ def schema_for_column(column):  # pylint: disable=too-many-branches
     elif data_type in JSON_TYPES:
         result.type = ['null', 'object', 'array']
 
+    # Treat sets as arrays to force manual conversion
+    elif data_type == 'set':
+        result.type = ['null', 'array']
+
     elif data_type in STRING_TYPES:
         result.type = ['null', 'string']
         result.maxLength = column.character_maximum_length

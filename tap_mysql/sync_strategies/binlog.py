@@ -229,8 +229,8 @@ def row_to_singer_record(catalog_entry, version, db_column_map, row, time_extrac
                 timedelta_from_epoch = datetime.datetime.utcfromtimestamp(0) + val
                 row_to_persist[column_name] = timedelta_from_epoch.isoformat() + '+00:00'
 
-        elif db_column_type == FIELD_TYPE.JSON:
-            row_to_persist[column_name] = json.dumps(json_bytes_to_string(val))
+        elif db_column_type == FIELD_TYPE.SET:
+            row_to_persist[column_name] = list(val)
 
         elif property_format == 'spatial':
             if val:
