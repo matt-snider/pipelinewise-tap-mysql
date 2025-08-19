@@ -114,6 +114,11 @@ def row_to_singer_record(catalog_entry, version, row, columns, time_extracted):
         elif isinstance(elem, set):
             row_to_persist += (list(elem),)
 
+        # Handling MySQL set type: this requires that the schema be overridden to ["null", "array", "set"]
+        # and then a value like "elem1,elem2" will be converted to a JSON array ["elem1", "elem2"]
+        elif isinstance(elem, str) and ('set' in property_type or property_type == 'set'):
+            row_to_persist += (elem.split(","),)
+
         elif 'boolean' in property_type or property_type == 'boolean':
             if elem is None:
                 boolean_representation = None
