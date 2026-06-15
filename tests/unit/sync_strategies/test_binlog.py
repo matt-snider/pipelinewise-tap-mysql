@@ -9,8 +9,7 @@ from typing import Dict
 from unittest import TestCase
 from unittest.mock import patch, Mock, call, MagicMock
 
-from pymysql import InternalError
-from pymysql.cursors import Cursor
+from mysql.connector.errors import InternalError
 from pymysqlreplication.constants import FIELD_TYPE
 from pymysqlreplication.event import RotateEvent, MariadbGtidEvent, GtidEvent
 from pymysqlreplication.row_event import WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent
@@ -1635,7 +1634,7 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['ROW'],
             ['FULL']
@@ -1660,7 +1659,7 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['ROW'],
             ['Not-FULL']
@@ -1689,7 +1688,7 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['Not-ROW'],
         ]
@@ -1716,14 +1715,14 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['ROW'],
         ]
 
         cur_mock.__enter__.return_value.execute.side_effect = [
             None,
-            InternalError(1193)
+            InternalError(errno=1193)
         ]
 
         mysql_con.__enter__.return_value.cursor.return_value = cur_mock
@@ -1751,7 +1750,7 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['ON'],
         ]
@@ -1774,7 +1773,7 @@ class TestBinlogSyncStrategy(TestCase):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
 
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['OFF'],
         ]
@@ -1798,7 +1797,7 @@ class TestBinlogSyncStrategy(TestCase):
     @patch('tap_mysql.sync_strategies.binlog.connect_with_backoff')
     def test_fetch_current_log_file_and_pos_success(self, connect_with_backoff):
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['binlog.000033', 345, ''],
         ]
@@ -1822,7 +1821,7 @@ class TestBinlogSyncStrategy(TestCase):
     @patch('tap_mysql.sync_strategies.binlog.connect_with_backoff')
     def test_fetch_current_log_file_and_pos_fail_if_no_result(self, connect_with_backoff):
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             None
         ]
@@ -1849,7 +1848,7 @@ class TestBinlogSyncStrategy(TestCase):
     def test_fetch_current_gtid_pos_for_mysql_not_found_expect_exception(
             self, connect_with_backoff, fetch_server_uuid):
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['3E11FA47-71CA-11E1-9E21-C80AA9429562:1,3E11FA47-71BB-11E1-9E33-C80AA9429562:2:143,0-3-1123,,'
              '3E11FA47-71CA-11E1-9E33-C80AA9429562:2:332'],
@@ -1877,7 +1876,7 @@ class TestBinlogSyncStrategy(TestCase):
             self, connect_with_backoff, fetch_server_uuid):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['3E11FA47-71CA-11E1-9E33-C80AA9429562:1,3E11FA47-71BB-11E1-9E33-C80AA9429562:2:143,0-3-1123,,'
              '3E11FA47-71CA-11E1-9E33-C80AA9429562:2:332'],
@@ -1906,7 +1905,7 @@ class TestBinlogSyncStrategy(TestCase):
     def test_fetch_current_gtid_pos_for_mariadb_no_gtid_found_expect_exception(
             self, connect_with_backoff, fetch_server_id):
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             None
         ]
@@ -1936,7 +1935,7 @@ class TestBinlogSyncStrategy(TestCase):
             self, connect_with_backoff, fetch_server_id):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['0, 0-4-222,']
         ]
@@ -2002,7 +2001,7 @@ class TestBinlogSyncStrategy(TestCase):
             }
         }
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['0-4-222'],
             [4]
@@ -2051,7 +2050,7 @@ class TestBinlogSyncStrategy(TestCase):
             }
         }
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.side_effect = [
             ['0-4-222,,3-4,5-66-2213,6-89-7222'],
             [89]

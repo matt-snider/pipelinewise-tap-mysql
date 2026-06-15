@@ -2,9 +2,6 @@ import unittest
 
 from unittest.mock import patch, MagicMock, call
 
-from pymysql.cursors import Cursor
-from singer import CatalogEntry
-
 from tap_mysql.connection import MySQLConnection, fetch_server_id, fetch_server_uuid
 
 import tap_mysql.connection
@@ -16,7 +13,7 @@ class TestConnection(unittest.TestCase):
     def test_fetch_server_id(self, connect_with_backoff):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.return_value = [111]
 
         mysql_con.__enter__.return_value.cursor.return_value = cur_mock
@@ -39,7 +36,7 @@ class TestConnection(unittest.TestCase):
     def test_fetch_server_uuid(self, connect_with_backoff):
 
         mysql_con = MagicMock(spec_set=MySQLConnection).return_value
-        cur_mock = MagicMock(spec_set=Cursor).return_value
+        cur_mock = MagicMock().return_value
         cur_mock.__enter__.return_value.fetchone.return_value = ['dkfhdsf0-ejr-dfbsf-dnfnsbdmfbdf']
 
         mysql_con.__enter__.return_value.cursor.return_value = cur_mock
