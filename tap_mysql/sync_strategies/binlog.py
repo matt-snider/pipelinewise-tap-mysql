@@ -688,9 +688,10 @@ def _run_binlog_sync(
                                  processed_rows_events)
             else:
                 # Compare event's columns to the schema properties
-                diff = __get_diff_in_columns_list(binlog_event,
-                                                  catalog_entry.schema.properties.keys(),
-                                                  ignored_columns)
+                # diff = __get_diff_in_columns_list(binlog_event,
+                #                                   catalog_entry.schema.properties.keys(),
+                #                                   ignored_columns)
+                diff = set()
 
                 # If there are additional cols in the event then run discovery if needed and update the catalog
                 if diff:
@@ -826,6 +827,7 @@ def create_binlog_stream_reader(
         'server_id': server_id,  # slave server ID
         'report_slave': socket.gethostname() or 'pipelinewise',  # this is so this slave appears in SHOW SLAVE HOSTS;
         'only_events': [WriteRowsEvent, UpdateRowsEvent, DeleteRowsEvent],
+        'use_column_name_cache': True,
     }
 
     # only fetch events pertaining to the schemas in filter db.
