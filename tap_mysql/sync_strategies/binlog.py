@@ -237,6 +237,9 @@ def row_to_singer_record(catalog_entry, version, db_column_map, row, time_extrac
         elif db_column_type == FIELD_TYPE.SET:
             row_to_persist[column_name] = list(val)
 
+        elif db_column_type == FIELD_TYPE.JSON:
+            row_to_persist[column_name] = json.dumps(json_bytes_to_string(val))
+
         elif property_format == 'spatial':
             if val:
                 srid = int.from_bytes(val[:4], byteorder='little')
