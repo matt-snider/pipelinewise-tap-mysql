@@ -715,7 +715,9 @@ def _run_binlog_sync(
                         # run discovery for the current table only
                         new_catalog_entry = discover_catalog(mysql_conn,
                                                              config.get('filter_dbs'),
-                                                             catalog_entry.table).streams[0]
+                                                             config.get('table_exclude_patterns'),
+                                                             catalog_entry.table
+                                                             ).streams[0]
 
                         selected = {k for k, v in new_catalog_entry.schema.properties.items()
                                     if common.property_is_selected(new_catalog_entry, k)}

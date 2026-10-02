@@ -116,7 +116,7 @@ def should_run_discovery(column_names: Set[str], md_map: Dict[Tuple, Dict]) -> b
     return False
 
 
-def discover_catalog(mysql_conn: MySQLConnection, dbs: str = None, tables: Optional[str] = None):
+def discover_catalog(mysql_conn: MySQLConnection, dbs: str = None, table_exclude_patterns: List[str] = None, tables: Optional[str] = None):
     """Returns a Catalog describing the structure of the database."""
 
     if dbs:
@@ -137,6 +137,12 @@ def discover_catalog(mysql_conn: MySQLConnection, dbs: str = None, tables: Optio
         filter_tables_clause = ",".join([f"'{table_name}'" for table_name in tables.split(",")])
         tables_clause = f" AND table_name IN ({filter_tables_clause})"
 
+    exclude_tables_clause = ''
+
+    if table_exclude_patterns and isinstance(table_exclude_patterns, list):
+        exclude_conditions = " AND ".join([f"table_name not like '{pat}'" for pat in table_exclude_patterns])
+        exclude_tables_clause = f"AND ({exclude_conditions})"
+
     with connect_with_backoff(mysql_conn) as open_conn:
         with open_conn.cursor() as cur:
             cur.execute(f"""
@@ -145,7 +151,7 @@ def discover_catalog(mysql_conn: MySQLConnection, dbs: str = None, tables: Optio
                    table_type,
                    table_rows
                 FROM information_schema.tables
-                {table_schema_clause}{tables_clause}
+                {table_schema_clause}{tables_clause}{exclude_tables_clause}
             """)
 
             table_info = {}
@@ -170,7 +176,7 @@ def discover_catalog(mysql_conn: MySQLConnection, dbs: str = None, tables: Optio
                        column_type,
                        column_key
                     FROM information_schema.columns
-                    {table_schema_clause}{tables_clause}
+                    {table_schema_clause}{tables_clause}{exclude_tables_clause}
                     ORDER BY table_schema, table_name
             """)
 

@@ -38,7 +38,7 @@ REQUIRED_CONFIG_KEYS = [
 
 
 def do_discover(mysql_conn, config):
-    discover_catalog(mysql_conn, config.get('filter_dbs')).dump()
+    discover_catalog(mysql_conn, config.get('filter_dbs'), config.get('table_exclude_patterns')).dump()
 
 
 def log_engine(mysql_conn, catalog_entry):
@@ -127,7 +127,7 @@ def get_non_binlog_streams(mysql_conn, catalog, config, state):
       3. any streams that do not have a replication method of LOG_BASED
 
     """
-    discovered = discover_catalog(mysql_conn, config.get('filter_dbs'))
+    discovered = discover_catalog(mysql_conn, config.get('filter_dbs'), config.get('table_exclude_patterns'))
 
     # Filter catalog to include only selected streams
     selected_streams = list(filter(common.stream_is_selected, catalog.streams))
@@ -181,7 +181,7 @@ def get_non_binlog_streams(mysql_conn, catalog, config, state):
 
 
 def get_binlog_streams(mysql_conn, catalog, config, state):
-    discovered = discover_catalog(mysql_conn, config.get('filter_dbs'))
+    discovered = discover_catalog(mysql_conn, config.get('filter_dbs'), config.get('table_exclude_patterns'))
 
     selected_streams = list(filter(common.stream_is_selected, catalog.streams))
     binlog_streams = []
